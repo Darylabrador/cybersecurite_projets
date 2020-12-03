@@ -14,7 +14,6 @@
         <input id="email" type="email" placeholder="email">
         <input id="password" type="password" placeholder="mot de passe">
         <button type="submit"> Se connecter </button>
-        
     </form>
     
     <script src="{{ asset('js/script.js')}}"> </script>

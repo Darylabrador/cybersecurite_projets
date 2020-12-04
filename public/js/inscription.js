@@ -1,5 +1,7 @@
 $(function(){
 
+    var messagePassword = "";
+
     /**
      * Display message on user interface
      * @param {String} type 
@@ -31,21 +33,23 @@ $(function(){
 
         switch (strength) {
             case 100:
+                messagePassword = "Mot de passe fort";
                 $('#passStrengthBar').addClass('bg-success')
                 $('#passStrengthBar').removeClass('bg-warning')
                 $('#passStrengthBar').removeClass('bg-danger')
                 $('#passwordInfo').html(`
                 <div style="font-size: 11px !important" class="mt-2">
-                    <h6 style="font-size: 11px !important" class="font-weight-bold"> Mot de passe fort </h6>
+                    <h6 style="font-size: 11px !important" class="font-weight-bold"> ${messagePassword} </h6>
                 </div>`)
                 break;
             case 40:
+                messagePassword = "Mot de passe moyen";
                 $('#passStrengthBar').addClass('bg-warning')
                 $('#passStrengthBar').removeClass('bg-success')
                 $('#passStrengthBar').removeClass('bg-danger')
                 $('#passwordInfo').html(`
                 <div style="font-size: 11px !important" class="mt-2">
-                    <h6 style="font-size: 11px !important" class="font-weight-bold"> Mot de passe moyen </h6>
+                    <h6 style="font-size: 11px !important" class="font-weight-bold">  ${messagePassword} </h6>
                     <p> Pour avoir un mot de passe fort </p>
                     <ul class="w-100 pl-4">
                         <li> Au moins 2 minuscules consécutifs </li>
@@ -57,12 +61,13 @@ $(function(){
                 </div>`)
                 break;
             case 10:
+                messagePassword = "Mot de passe faible";
                 $('#passStrengthBar').addClass('bg-danger')
                 $('#passStrengthBar').removeClass('bg-success')
                 $('#passStrengthBar').removeClass('bg-warning')
                 $('#passwordInfo').html(`
                 <div style="font-size: 11px !important" class="mt-2">
-                    <h6 style="font-size: 11px !important" class="font-weight-bold"> Mot de passe faible </h6>
+                    <h6 style="font-size: 11px !important" class="font-weight-bold">  ${messagePassword} </h6>
                     <p> Pour avoir un mot de passe fort </p>
                     <ul class="w-100 pl-4">
                         <li> Au moins 2 minuscules consécutifs </li>
@@ -85,8 +90,6 @@ $(function(){
     const displayStrength = (password) => {
         var strongRegex = new RegExp("((?=.*[a-z]{2,})(?=.*[A-Z]{2,})(?=.*[0-9]{2,})(?=.*[!@#\$%\^&\*]))(?=.{8,})");
         var mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
-
-        console.log(password);
 
         if(strongRegex.test(password)) {
             progressBarStrength(100);
@@ -111,14 +114,36 @@ $(function(){
     });
 
 
-    $('')
+    $('#passwordConfirm').on('keyup', function(evt){
+        let password        = $('#password').val();
+        let passwordConfirm = evt.target.value;
+        if(password != passwordConfirm) {
+            $('#passwordInfo').removeClass('d-none');
+            $('#passwordInfo').html(`
+              <div style="font-size: 11px !important" class="mt-2">
+                <h6 style="font-size: 11px !important" class="font-weight-bold"> Les mots de passes ne sont pas identique </h6>
+            </div>`);
+        }
+
+        if (passwordConfirm == "" || password == passwordConfirm) {
+            $('#passwordInfo').html(`
+              <div style="font-size: 11px !important" class="mt-2">
+                <h6 style="font-size: 11px !important" class="font-weight-bold">  ${messagePassword} </h6>
+            </div>`);
+        }
+    });
 
     $('#inscription').on('submit', function(evt){
         evt.preventDefault();
+
+        let sendEmail           = $('#email').val();
+        let sendPassword        = $('#password').val();
+        let sendPasswordConfirm = $('#passwordConfirm').val();
+
         let dataSend = {
-            email: $('#email').val(),
-            password: $('#password').val(),
-            passwordConfirm: $('#passwordConfirm').val(),
+            email: sendEmail,
+            password: sendPassword,
+            passwordConfirm: sendPasswordConfirm,
         }
 
         $.ajax({

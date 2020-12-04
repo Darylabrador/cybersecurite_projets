@@ -107,5 +107,25 @@ class AuthController extends Controller
                 'message' => "Les mots passes ne sont pas identiques"
             ]);
         }
+
+        $user = User::where(['email' => $email])->first();
+        if(!$user) {
+            $user = User::create([
+                "email" => $email,
+                "password" => Hash::make($password),
+            ]);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Inscription validée'
+            ]);
+        } 
+        
+        return response()->json([
+            'success' => false,
+            'type' => 'danger',
+            'message' => 'Vous ne pouvez pas vous inscrire !'
+        ]);
+        
     }
 }

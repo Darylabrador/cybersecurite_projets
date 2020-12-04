@@ -8,9 +8,9 @@
             <div class="card-body">
                 <h5 class="text-center font-weight-bold">Inscription</h5>
                 <div class="mt-5 mb-4">
-                    <input id="email" type="email" placeholder="Saisir votre adresse e-mail" class="form-control  my-2">
-                    <input id="password" type="password" placeholder="Saisir votre mot de passe" class="form-control  my-2">
-                    <input id="passwordConfirm" type="password" placeholder="Confirmer votre mot de passe" class="form-control  my-2">
+                    <input required id="email" type="email" placeholder="Saisir votre adresse e-mail" class="form-control  my-2">
+                    <input required id="password" type="password" placeholder="Saisir votre mot de passe" class="form-control  my-2">
+                    <input required id="passwordConfirm" type="password" placeholder="Confirmer votre mot de passe" class="form-control  my-2">
                     <div id="passStrength" class="progress d-none">
                         <div id="passStrengthBar" class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>

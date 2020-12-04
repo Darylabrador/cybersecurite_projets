@@ -19,7 +19,7 @@ Après avoir fait un git clone de ce projet, vous devez effectué les actions su
 
 - composer install
 - php artisan migrate:fresh --seed
-- php artisan passport:install
+- php artisan passport:install --force
 - php artisan queue:work
 
 Ensuite, vous devez créer et modifier le fichier .env pour les lignes suivantes : 

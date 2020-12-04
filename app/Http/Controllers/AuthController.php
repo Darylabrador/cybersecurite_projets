@@ -61,4 +61,32 @@ class AuthController extends Controller
             'token' => $token
         ]);
     }
+
+
+    /**
+     * Handle register
+     * @param  \Illuminate\Http\Request  $request
+     */
+    public function inscription(Request $request){
+        $validator = Validator::make(
+            $request->all(),
+            [
+                'email' => 'required',
+                'password' => 'required',
+                'passwordConfirm' => 'required'
+            ],
+            [
+                'required' => 'Le champ :attribute est requis',
+            ]
+        );
+
+        $errors = $validator->errors();
+        if (count($errors) != 0) {
+            return response()->json([
+                'success' => false,
+                'message' => $errors->first()
+            ]);
+        }
+
+    }
 }

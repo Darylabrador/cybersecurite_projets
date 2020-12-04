@@ -17,3 +17,5 @@ use App\Http\Controllers\AuthController;
 */
 
 Route::post('/login', [AuthController::class, 'postLogin']);
+
+Route::post('/inscription', [AuthController::class, 'inscription']);

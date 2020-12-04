@@ -36,18 +36,21 @@ class AuthController extends Controller
 
         $user = User::where('email', $request->email)->first();
         if(!$user || !Hash::check($request->password, $user->password)){
-            $user->tentatives = $user->tentatives + 1;
-            $user->save();
 
-            if($user->tentatives > 3) {
-                $user->tentatives = 3;
+            if($user) {
+                $user->tentatives = $user->tentatives + 1;
                 $user->save();
-                Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
-                return response()->json([
-                    'success' => false,
-                    'message' => "Vous avez dépasser le nombre de tentatives autorisé",
-                ]);
-            } 
+                if($user->tentatives > 3) {
+                    $user->tentatives = 3;
+                    $user->save();
+                    Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Veuillez réessayer dans 5 minutes",
+                    ]);
+                } 
+            }
+
             return response()->json([
                 'success' => false,
                 'message' => "Adresse email ou mot de passe invalide !",
@@ -58,6 +61,7 @@ class AuthController extends Controller
         $token = $user->createToken('Auth token')->accessToken;
         return response()->json([
             'success' => true,
+            'message' => 'Vous êtes connecté(e)',
             'token' => $token
         ]);
     }

@@ -1,7 +1,7 @@
 @extends('layout.app')
 
 @section('content')
-    <div class="container loginContainer">
+    <div class="container centerContainer">
         <div id="flashMessage" class="w-50 mx-auto"></div>
 
         <form method="POST" id="inscription" class="card mx-auto" style="width: 30rem;">

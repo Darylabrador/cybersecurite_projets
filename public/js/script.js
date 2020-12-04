@@ -1,4 +1,23 @@
 $(function() {
+
+    /**
+     * Display message on user interface
+     * @param {String} type 
+     * @param {String} message 
+     */
+    const displayMessage = (type, message) => {
+        $('#flashMessage').html(`
+            <div class="w-100 mx-auto mt-2">
+                <div class="alert alert-${type} alert-dismissible fade show mt-0" role="alert">
+                    <strong> ${message} </strong>
+                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+            </div>
+        `);
+    }
+    
     $('#login').on('submit', function(evt){
         evt.preventDefault();
 
@@ -13,9 +32,19 @@ $(function() {
             data: dataSend,
             dataType: "json",
             success: function (response) {
-                console.log(response)
-                // $('#login')[0].reset();
+                if(response.success) {
+                    console.log('votre token est : ', response.token);
+                    displayMessage('success', response.message);
+                    $('#login')[0].reset();
+                } else {
+                    displayMessage('danger', response.message);
+                }
             }
         });
     })
+
+    if(localStorage.getItem('message')) {
+        displayMessage('success', localStorage.getItem('message'));
+        localStorage.clear();
+    }
 });

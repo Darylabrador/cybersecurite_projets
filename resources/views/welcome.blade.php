@@ -1,17 +1,8 @@
 @extends('layout.app')
 
 @section('content')
-    <div class="container loginContainer">
-        <div id="flashMessage" class="w-50 mx-auto">
-            <div class="w-100 mx-auto mt-2">
-                <div class="alert alert-success alert-dismissible fade show mt-0" role="alert">
-                    <strong> test </strong>
-                    <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <div class="container centerContainer">
+        <div id="flashMessage" class="w-50 mx-auto"></div>
 
         <form method="POST" id="login" class="card mx-auto" style="width: 30rem;">
             <div class="card-body">

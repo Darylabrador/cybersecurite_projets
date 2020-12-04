@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Log;
+use App\Jobs\ResetTentatives;
+use Carbon\Carbon;
 
 class AuthController extends Controller
 {
@@ -44,11 +46,15 @@ class AuthController extends Controller
                 if($user->tentatives > 3) {
                     $user->tentatives = 3;
                     $user->save();
+
+                    $resetJob = (new ResetTentatives($user->id))->delay(Carbon::now()->addSeconds(30));
+                    dispatch($resetJob);
+           
                     Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
                     return response()->json([
                         'success' => false,
                         'type'    => 'info',
-                        'message' => "Veuillez réessayer dans 5 minutes",
+                        'message' => "Veuillez réessayer dans 30 secondes",
                     ]);
                 } 
             }
@@ -57,7 +63,6 @@ class AuthController extends Controller
                 'success' => false,
                 'type'    => 'danger',
                 'message' => "Adresse email ou mot de passe invalide !",
-                'tentative' => $user->tentatives
             ]);
         }
 
@@ -120,7 +125,7 @@ class AuthController extends Controller
                 'message' => 'Inscription validée'
             ]);
         } 
-        
+
         return response()->json([
             'success' => false,
             'type' => 'danger',

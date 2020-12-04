@@ -20,18 +20,51 @@ $(function(){
 
 
     /**
+     * Dynamic progress bar
+     * @param {*} strength 
+     */
+    const progressBarStrength = (strength) => {
+        $('#passStrengthBar').attr({
+            style: `width: ${strength}%`,
+            "aria-valuenow": strength,
+        })
+
+        switch (strength) {
+            case 100:
+                $('#passStrengthBar').addClass('bg-success')
+                $('#passStrengthBar').removeClass('bg-warning')
+                $('#passStrengthBar').removeClass('bg-danger')
+                break;
+            case 40:
+                $('#passStrengthBar').addClass('bg-warning')
+                $('#passStrengthBar').removeClass('bg-success')
+                $('#passStrengthBar').removeClass('bg-danger')
+                break;
+            case 10:
+                $('#passStrengthBar').addClass('bg-danger')
+                $('#passStrengthBar').removeClass('bg-success')
+                $('#passStrengthBar').removeClass('bg-warning')
+                break;
+            default:
+                break;
+        }
+
+    }
+
+    /**
      * Display password strength
      */
     const displayStrength = (password) => {
-        let valueLength = password.length;
-        
-        console.log('password ', password)
-        console.log('password length ', valueLength);
+        var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+        var mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
 
-        $('#passStrengthBar').attr({
-            style: `width: ${valueLength}%`,
-            "aria-valuenow": valueLength,
-        })
+        if(strongRegex.test(password)) {
+            progressBarStrength(100);
+        } else if(mediumRegex.test(password)) {
+            progressBarStrength(40);
+        } else {
+            progressBarStrength(10);
+        }
     }
 
 

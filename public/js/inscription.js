@@ -18,6 +18,34 @@ $(function(){
         `);
     }
 
+
+    /**
+     * Display password strength
+     */
+    const displayStrength = (password) => {
+        let valueLength = password.length;
+        
+        console.log('password ', password)
+        console.log('password length ', valueLength);
+
+        $('#passStrengthBar').attr({
+            style: `width: ${valueLength}%`,
+            "aria-valuenow": valueLength,
+        })
+    }
+
+
+    $('#password').on('keyup', function(evt){
+        let chosenPass = evt.target.value;
+        if(chosenPass != ""){
+            $('#passStrength').removeClass('d-none');
+        } else {
+            $('#passStrength').addClass('d-none');
+        }
+        displayStrength(chosenPass);
+    });
+
+
     $('#inscription').on('submit', function(evt){
         evt.preventDefault();
         let dataSend = {
@@ -37,7 +65,7 @@ $(function(){
                     location.href = '/';
                     $('#inscription')[0].reset();
                 } else {
-                    displayMessage('danger', response.message);
+                    displayMessage(response.type, response.message);
                 }
             }
         });

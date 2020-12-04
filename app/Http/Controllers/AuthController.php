@@ -30,6 +30,7 @@ class AuthController extends Controller
         if (count($errors) != 0) {
             return response()->json([
                 'success' => false,
+                'type' => 'danger',
                 'message' => $errors->first()
             ]);
         }
@@ -46,6 +47,7 @@ class AuthController extends Controller
                     Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
                     return response()->json([
                         'success' => false,
+                        'type'    => 'info',
                         'message' => "Veuillez réessayer dans 5 minutes",
                     ]);
                 } 
@@ -53,6 +55,7 @@ class AuthController extends Controller
 
             return response()->json([
                 'success' => false,
+                'type'    => 'danger',
                 'message' => "Adresse email ou mot de passe invalide !",
                 'tentative' => $user->tentatives
             ]);
@@ -61,6 +64,7 @@ class AuthController extends Controller
         $token = $user->createToken('Auth token')->accessToken;
         return response()->json([
             'success' => true,
+            'type'    => 'success',
             'message' => 'Vous êtes connecté(e)',
             'token' => $token
         ]);
@@ -75,8 +79,8 @@ class AuthController extends Controller
         $validator = Validator::make(
             $request->all(),
             [
-                'email' => 'required',
-                'password' => 'required',
+                'email'           => 'required',
+                'password'        => 'required',
                 'passwordConfirm' => 'required'
             ],
             [
@@ -92,5 +96,16 @@ class AuthController extends Controller
             ]);
         }
 
+        $email           = $validator->validated()['email'];
+        $password        = $validator->validated()['password'];
+        $passwordConfirm = $validator->validated()['passwordConfirm'];
+
+        if($password != $passwordConfirm) {
+            return response()->json([
+                'success' => false,
+                'type' => 'danger',
+                'message' => "Les mots passes ne sont pas identiques"
+            ]);
+        }
     }
 }

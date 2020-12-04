@@ -34,11 +34,9 @@ $(function() {
             success: function (response) {
                 if(response.success) {
                     console.log('votre token est : ', response.token);
-                    displayMessage('success', response.message);
                     $('#login')[0].reset();
-                } else {
-                    displayMessage('danger', response.message);
                 }
+                displayMessage(response.type, response.message);
             }
         });
     })

@@ -20,11 +20,13 @@ Après avoir fait un git clone de ce projet, vous devez effectué les actions su
 - composer install
 - php artisan migrate:fresh --seed
 - php artisan passport:install
+- php artisan queue:work
 
 Ensuite, vous devez créer et modifier le fichier .env pour les lignes suivantes : 
 
 - DB_DATABASE=
 - DB_USERNAME=
 - DB_PASSWORD=
+- QUEUE_CONNECTION=database
 
 Les informations concernant le passport se trouve dans votre base de données.

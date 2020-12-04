@@ -46,10 +46,9 @@ class AuthController extends Controller
                 if($user->tentatives > 3) {
                     $user->tentatives = 3;
                     $user->save();
-
                     $resetJob = (new ResetTentatives($user->id))->delay(Carbon::now()->addSeconds(30));
                     dispatch($resetJob);
-           
+                
                     Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
                     return response()->json([
                         'success' => false,

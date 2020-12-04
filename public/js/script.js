@@ -33,7 +33,7 @@ $(function() {
             dataType: "json",
             success: function (response) {
                 if(response.success) {
-                    localStorage.set('token', response.token)
+                    localStorage.setItem('token', response.token)
                     $('#login')[0].reset();
                 }
                 displayMessage(response.type, response.message);

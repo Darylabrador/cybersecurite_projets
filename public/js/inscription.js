@@ -153,9 +153,10 @@ $(function(){
             dataType: "json",
             success: function (response) {
                 if (response.success) {
+                    messagePassword = "";
+                    $('#inscription')[0].reset();
                     localStorage.setItem('message', response.message)
                     location.href = '/';
-                    $('#inscription')[0].reset();
                 } else {
                     displayMessage(response.type, response.message);
                 }

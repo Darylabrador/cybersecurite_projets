@@ -14,6 +14,7 @@
                     <div id="passStrength" class="progress d-none">
                         <div id="passStrengthBar" class="progress-bar bg-success" role="progressbar" aria-valuemin="0" aria-valuemax="100"></div>
                     </div>
+                    <div id="passwordInfo"></div>
                 </div>
                 <div class="d-flex w-100 justify-content-end">
                     <a href="{{ route('login') }}" class="btn btn-secondary mr-1">Retour</a>

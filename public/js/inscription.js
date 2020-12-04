@@ -34,16 +34,44 @@ $(function(){
                 $('#passStrengthBar').addClass('bg-success')
                 $('#passStrengthBar').removeClass('bg-warning')
                 $('#passStrengthBar').removeClass('bg-danger')
+                $('#passwordInfo').html(`
+                <div style="font-size: 11px !important" class="mt-2">
+                    <h6 style="font-size: 11px !important" class="font-weight-bold"> Mot de passe fort </h6>
+                </div>`)
                 break;
             case 40:
                 $('#passStrengthBar').addClass('bg-warning')
                 $('#passStrengthBar').removeClass('bg-success')
                 $('#passStrengthBar').removeClass('bg-danger')
+                $('#passwordInfo').html(`
+                <div style="font-size: 11px !important" class="mt-2">
+                    <h6 style="font-size: 11px !important" class="font-weight-bold"> Mot de passe moyen </h6>
+                    <p> Pour avoir un mot de passe fort </p>
+                    <ul class="w-100 pl-4">
+                        <li> Au moins 2 minuscules consécutifs </li>
+                        <li> Au moins 2 majuscules consécutifs </li>
+                        <li> Au moins 2 chiffres consécutifs </li>
+                        <li> Au moins 1 caractère spécial </li>
+                        <li> Mot de passe de 8 caractères ou plus </li>
+                    </ul>
+                </div>`)
                 break;
             case 10:
                 $('#passStrengthBar').addClass('bg-danger')
                 $('#passStrengthBar').removeClass('bg-success')
                 $('#passStrengthBar').removeClass('bg-warning')
+                $('#passwordInfo').html(`
+                <div style="font-size: 11px !important" class="mt-2">
+                    <h6 style="font-size: 11px !important" class="font-weight-bold"> Mot de passe faible </h6>
+                    <p> Pour avoir un mot de passe fort </p>
+                    <ul class="w-100 pl-4">
+                        <li> Au moins 2 minuscules consécutifs </li>
+                        <li> Au moins 2 majuscules consécutifs </li>
+                        <li> Au moins 2 chiffres consécutifs </li>
+                        <li> Au moins 1 caractère spécial </li>
+                        <li> Mot de passe de 8 caractères ou plus </li>
+                    </ul>
+                </div>`)
                 break;
             default:
                 break;
@@ -55,8 +83,10 @@ $(function(){
      * Display password strength
      */
     const displayStrength = (password) => {
-        var strongRegex = new RegExp("^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#\$%\^&\*])(?=.{8,})");
+        var strongRegex = new RegExp("((?=.*[a-z]{2,})(?=.*[A-Z]{2,})(?=.*[0-9]{2,})(?=.*[!@#\$%\^&\*]))(?=.{8,})");
         var mediumRegex = new RegExp("^(((?=.*[a-z])(?=.*[A-Z]))|((?=.*[a-z])(?=.*[0-9]))|((?=.*[A-Z])(?=.*[0-9])))(?=.{6,})");
+
+        console.log(password);
 
         if(strongRegex.test(password)) {
             progressBarStrength(100);
@@ -72,12 +102,16 @@ $(function(){
         let chosenPass = evt.target.value;
         if(chosenPass != ""){
             $('#passStrength').removeClass('d-none');
+            $('#passwordInfo').removeClass('d-none');
         } else {
             $('#passStrength').addClass('d-none');
+            $('#passwordInfo').addClass("d-none");
         }
         displayStrength(chosenPass);
     });
 
+
+    $('')
 
     $('#inscription').on('submit', function(evt){
         evt.preventDefault();

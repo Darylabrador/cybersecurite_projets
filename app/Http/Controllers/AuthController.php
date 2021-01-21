@@ -48,8 +48,11 @@ class AuthController extends Controller
                     $user->save();
                     $resetJob = (new ResetTentatives($user->id))->delay(Carbon::now()->addSeconds(30));
                     dispatch($resetJob);
-                
-                    Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
+                    
+                    openlog('cybersecurite_app', LOG_NDELAY, LOG_USER);
+                    syslog(LOG_INFO|LOG_LOCAL0, "L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
+                    // Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
+                    
                     return response()->json([
                         'success' => false,
                         'type'    => 'info',

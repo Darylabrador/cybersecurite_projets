@@ -30,3 +30,5 @@ Ensuite, vous devez créer et modifier le fichier .env pour les lignes suivantes
 - QUEUE_CONNECTION=database
 
 Les informations concernant le passport se trouve dans votre base de données.
+
+> Les ressources annexes de configuration peuvent être retrouver dans le dossier documentation

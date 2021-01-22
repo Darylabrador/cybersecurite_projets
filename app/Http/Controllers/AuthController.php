@@ -2,6 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Mail\NotificationUnlockedAccount;
+use App\Mail\NotificationLockedAccount;
+use Illuminate\Support\Facades\Mail;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -51,11 +54,14 @@ class AuthController extends Controller
                 if($user->tentatives > 3) {
                     $user->tentatives = 3;
                     $user->save();
-                    $resetJob = (new ResetTentatives($user->id))->delay(Carbon::now()->addSeconds(30));
+                    Mail::to($user->email)->later(30, new NotificationUnlockedAccount());
+                    $resetJob = (new ResetTentatives($user->id, $user->email))->delay(Carbon::now()->addSeconds(30));
                     dispatch($resetJob);
-                    
+                   
                     openlog('cybersecurite_app', LOG_NDELAY, LOG_USER);
                     syslog(LOG_INFO|LOG_LOCAL0, "L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
+                    Mail::to($user->email)->send(new NotificationLockedAccount());
+
                     // Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
                     
                     return response()->json([

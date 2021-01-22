@@ -29,6 +29,14 @@ Ensuite, vous devez créer et modifier le fichier .env pour les lignes suivantes
 - DB_PASSWORD=
 - QUEUE_CONNECTION=database
 
+- MAIL_MAILER=smtp
+- MAIL_HOST=smtp.mailtrap.io
+- MAIL_PORT=2525
+- MAIL_USERNAME=
+- MAIL_PASSWORD=
+- MAIL_ENCRYPTION=tls
+- MAIL_FROM_ADDRESS=contact@cybersecurite.com
+
 Les informations concernant le passport se trouve dans votre base de données.
 
 > Les ressources annexes de configuration peuvent être retrouver dans le dossier documentation

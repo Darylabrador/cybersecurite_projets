@@ -15,15 +15,17 @@ class ResetTentatives implements ShouldQueue
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
     public $userId;
+    public $userEmail;
 
     /**
      * Create a new job instance.
      *
      * @return void
      */
-    public function __construct($userId)
+    public function __construct($userId, $userEmail)
     {
-        $this->userId = $userId;
+        $this->userId    = $userId;
+        $this->userEmail = $userEmail;
     }
 
     /**

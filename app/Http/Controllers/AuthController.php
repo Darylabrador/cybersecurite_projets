@@ -41,8 +41,13 @@ class AuthController extends Controller
         if(!$user || !Hash::check($request->password, $user->password)){
 
             if($user) {
-                $user->tentatives = $user->tentatives + 1;
+                $tentative  = $user->tentatives + 1;
+                $user->tentatives = $tentative;
                 $user->save();
+
+                openlog('cybersecurite_app', LOG_NDELAY, LOG_USER);
+                syslog(LOG_INFO|LOG_LOCAL0, "il y a eu {$tentative} tentative de connexion au compte {$user->email}");
+
                 if($user->tentatives > 3) {
                     $user->tentatives = 3;
                     $user->save();

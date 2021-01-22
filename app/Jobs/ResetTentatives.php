@@ -36,5 +36,7 @@ class ResetTentatives implements ShouldQueue
         $user = User::whereId($this->userId)->first();
         $user->tentatives = 0;
         $user->save();
+        openlog('cybersecurite_app', LOG_NDELAY, LOG_USER);
+        syslog(LOG_INFO|LOG_LOCAL0, "Le compte {$user->email} a été débloqué !");
     }
 }

@@ -41,28 +41,30 @@ class AuthController extends Controller
 
         $email      = $validator->validated()['email'];
         $password   = $validator->validated()['password'];
-        $user = User::where('email', $email)->first();
+        $email      = $validator->validated()['email'];
+        $password   = $validator->validated()['password'];
+        $userExist  = User::where(["email" => $email])->first();
 
-        if (!$user) {
+        if (!$userExist) {
             return response()->json([
                 'success' => false,
                 'message' => "Adresse email ou mot de passe incorrecte"
             ]);
         }
 
-        $oldTentative = $user->tentatives;
+        $oldTentative = $userExist->tentatives;
 
         switch ($oldTentative) {
             case 3:
-                $user->tentatives = 4;
-                $user->save();
+                $userExist->tentatives = 4;
+                $userExist->save();
 
-                Mail::to($user->email)->later(now()->addMinutes(30), new NotificationUnlockedAccount());
-                $resetJob = (new ResetTentatives($user->id, $user->email))->delay(Carbon::now()->addMinutes(30));
+                Mail::to($userExist->email)->later(now()->addMinutes(30), new NotificationUnlockedAccount());
+                $resetJob = (new ResetTentatives($userExist->id, $userExist->email))->delay(Carbon::now()->addMinutes(30));
                 dispatch($resetJob);
                 openlog('TEMAAS_AUTH', LOG_NDELAY, LOG_USER);
-                syslog(LOG_INFO, "L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
-                Mail::to($user->email)->send(new NotificationLockedAccount());
+                syslog(LOG_INFO, "L'utilisateur {$userExist->email} à atteint son nombre maximal de tentative de connexion ! ");
+                Mail::to($userExist->email)->send(new NotificationLockedAccount());
 
                 return response()->json([
                     'success' => false,
@@ -76,23 +78,25 @@ class AuthController extends Controller
                 ]);
                 break;
             default:
-                $tentative    = $user->tentatives + 1;
-                $user->tentatives = $tentative;
-                $user->save();
-                return response()->json([
-                    'success' => false,
-                    'message' => "Adresse email ou mot de passe incorrecte",
-                ]);
+                if (Hash::check($password, $userExist->password)) {
+                    $userExist->tentatives = 0;
+                    $userExist->save();
+                    $token = $userExist->createToken('AuthToken')->accessToken;
+                    return response()->json([
+                        "success" => true,
+                        "message" => "Vous êtes connecté !",
+                        "token"   => $token
+                    ]);
+                } else {
+                    $tentative    = $userExist->tentatives + 1;
+                    $userExist->tentatives = $tentative;
+                    $userExist->save();
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Adresse email ou mot de passe incorrecte",
+                    ]);
+                }
                 break;
-        }
-
-        if (Hash::check($password, $user->password)) {
-            $token = $user->createToken('AuthToken')->accessToken;
-            return response()->json([
-                "success" => true,
-                "message" => "Vous êtes connecté !",
-                "token"   => $token
-            ]);
         }
     }
 

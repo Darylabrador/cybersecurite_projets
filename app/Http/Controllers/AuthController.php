@@ -9,7 +9,6 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Facades\Log;
 use App\Jobs\ResetTentatives;
 use Carbon\Carbon;
 
@@ -40,52 +39,61 @@ class AuthController extends Controller
             ]);
         }
 
-        $user = User::where('email', $request->email)->first();
-        if(!$user || !Hash::check($request->password, $user->password)){
+        $email      = $validator->validated()['email'];
+        $password   = $validator->validated()['password'];
+        $user = User::where('email', $email)->first();
 
-            if($user) {
-                $tentative  = $user->tentatives + 1;
-                $user->tentatives = $tentative;
-                $user->save();
-
-                openlog('cybersecurite_app', LOG_NDELAY, LOG_USER);
-                syslog(LOG_INFO|LOG_LOCAL0, "il y a eu {$tentative} tentative de connexion au compte {$user->email}");
-
-                if($user->tentatives > 3) {
-                    $user->tentatives = 3;
-                    $user->save();
-                    Mail::to($user->email)->later(30, new NotificationUnlockedAccount());
-                    $resetJob = (new ResetTentatives($user->id, $user->email))->delay(Carbon::now()->addSeconds(30));
-                    dispatch($resetJob);
-                   
-                    openlog('cybersecurite_app', LOG_NDELAY, LOG_USER);
-                    syslog(LOG_INFO|LOG_LOCAL0, "L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
-                    Mail::to($user->email)->send(new NotificationLockedAccount());
-
-                    // Log::channel('abuse')->info("L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
-                    
-                    return response()->json([
-                        'success' => false,
-                        'type'    => 'info',
-                        'message' => "Veuillez réessayer dans 30 secondes",
-                    ]);
-                } 
-            }
-
+        if (!$user) {
             return response()->json([
                 'success' => false,
-                'type'    => 'danger',
-                'message' => "Adresse email ou mot de passe invalide !",
+                'message' => "Adresse email ou mot de passe incorrecte"
             ]);
         }
 
-        $token = $user->createToken('Auth token')->accessToken;
-        return response()->json([
-            'success' => true,
-            'type'    => 'success',
-            'message' => 'Vous êtes connecté(e)',
-            'token' => $token
-        ]);
+        $oldTentative = $user->tentatives;
+
+        switch ($oldTentative) {
+            case 3:
+                $user->tentatives = 4;
+                $user->save();
+
+                Mail::to($user->email)->later(now()->addMinutes(30), new NotificationUnlockedAccount());
+                $resetJob = (new ResetTentatives($user->id, $user->email))->delay(Carbon::now()->addMinutes(30));
+                dispatch($resetJob);
+                openlog('TEMAAS_AUTH', LOG_NDELAY, LOG_USER);
+                syslog(LOG_INFO, "L'utilisateur {$user->email} à atteint son nombre maximal de tentative de connexion ! ");
+                Mail::to($user->email)->send(new NotificationLockedAccount());
+
+                return response()->json([
+                    'success' => false,
+                    'message' => "Veuillez réessayer dans 30 minutes",
+                ]);
+                break;
+            case 4:
+                return response()->json([
+                    'success' => false,
+                    'message' => "Veuillez réessayer dans quelques minutes",
+                ]);
+                break;
+            default:
+                $tentative    = $user->tentatives + 1;
+                $user->tentatives = $tentative;
+                $user->save();
+                return response()->json([
+                    'success' => false,
+                    'message' => "Adresse email ou mot de passe incorrecte",
+                ]);
+                break;
+        }
+
+        if (Hash::check($password, $user->password)) {
+            $token = $user->createToken('AuthToken')->accessToken;
+            return response()->json([
+                "success" => true,
+                "message" => "Vous êtes connecté !",
+                "token"   => $token
+            ]);
+        }
     }
 
 

@@ -4,7 +4,7 @@
     <div class="container centerContainer">
         <div id="flashMessage" class="w-50 mx-auto"></div>
 
-        <form method="POST" id="inscription" class="card mx-auto" style="width: 30rem;">
+        <form id="inscription" class="card mx-auto" style="width: 30rem;">
             <div class="card-body">
                 <h5 class="text-center font-weight-bold">Inscription</h5>
                 <div class="mt-5 mb-4">
